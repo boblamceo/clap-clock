@@ -6,6 +6,8 @@ DS3231 clock;
 RTCDateTime dt;
 SevSeg sevseg;  //Initiate a seven segment controller object
 
+int sensorDigitalPin = 13;
+int digitalValue;
 
 void setup() {
   byte numDigits = 4;
@@ -18,6 +20,7 @@ void setup() {
   sevseg.setBrightness(90);
   clock.begin();
   Serial.begin(9600);
+  pinMode(sensorDigitalPin, INPUT);
 
   // Manual (YYYY, MM, DD, HH, II, SS
   // clock.setDateTime(2016, 12, 9, 11, 46, 00);
@@ -25,8 +28,35 @@ void setup() {
   // Send sketch compiling time to Arduino
   clock.setDateTime(__DATE__, __TIME__);
 }
+bool on = false;
+int prev = 1;
+bool recording = false;
+unsigned long timer;
 void loop() {
-  dt = clock.getDateTime();
-  sevseg.setNumber(dt.hour * 100 + dt.minute, 2);
-  sevseg.refreshDisplay();  // Must run repeatedly
+  digitalValue = digitalRead(sensorDigitalPin);
+  if (on) {
+    dt = clock.getDateTime();
+    sevseg.setNumber(dt.hour * 100 + dt.minute, 2);  // Must run repeatedly
+  }
+  Serial.println(digitalValue);
+  Serial.print(on);
+  if (digitalValue == 0 && prev) {
+    if (!recording) {
+      recording = true;
+      timer = micros();
+    } else {
+      unsigned long currentTime = micros();
+      Serial.println(currentTime - timer);
+      if (currentTime - timer < 500000) {
+        on = !on;
+        recording = false;
+      }
+    }
+  }
+  prev = digitalValue;
+  if(on){
+  sevseg.refreshDisplay();
+  } else {
+    delay(100);
+  }
 }
