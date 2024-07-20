@@ -28,7 +28,7 @@ void setup() {
   // Send sketch compiling time to Arduino
   clock.setDateTime(__DATE__, __TIME__);
 }
-bool on = false;
+bool on = true;
 int prev = 1;
 bool recording = false;
 unsigned long timer;
@@ -40,8 +40,8 @@ void loop() {
   } else {
     sevseg.blank();
   }
-  Serial.println("Value" + String(digitalValue));
-  Serial.print(on);
+  // Serial.println("Value" + String(digitalValue));
+  // Serial.print(on);
   if (digitalValue == 0 && prev) {
     if (!recording) {
       Serial.println("HEREHEREHEREHEREHERER");
