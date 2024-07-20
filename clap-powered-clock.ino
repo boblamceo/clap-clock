@@ -37,26 +37,26 @@ void loop() {
   if (on) {
     dt = clock.getDateTime();
     sevseg.setNumber(dt.hour * 100 + dt.minute, 2);  // Must run repeatedly
+  } else {
+    sevseg.blank();
   }
-  Serial.println(digitalValue);
+  Serial.println("Value" + String(digitalValue));
   Serial.print(on);
   if (digitalValue == 0 && prev) {
     if (!recording) {
+      Serial.println("HEREHEREHEREHEREHERER");
       recording = true;
       timer = micros();
+      delay(100);
     } else {
       unsigned long currentTime = micros();
       Serial.println(currentTime - timer);
-      if (currentTime - timer < 500000) {
+      if (currentTime - timer < 1000000) {
         on = !on;
-        recording = false;
       }
+      recording = false;
     }
   }
   prev = digitalValue;
-  if(on){
   sevseg.refreshDisplay();
-  } else {
-    delay(100);
-  }
 }
